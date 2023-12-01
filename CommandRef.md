@@ -25,6 +25,7 @@ namespace import psi::ip_package::latest::*
  * [add_sources_relative](#add_sources_relative) 
  * [add_lib_relative](#add_lib_relative) 
  * [add_lib_copied](#add_lib_copied) 
+ * [set_constrs_settings](#set_constrs_settings) 
  * [add_sub_core_reference](#add_sub_core_reference)
  * [add_ttcl_vhd](#add_ttcl_vhd)
  * [gui_add_page](#gui_add_page) 
@@ -479,6 +480,46 @@ use "constrs_1" and "sim_1" for the target fileset.
       <td> fileset </td>
       <td> Yes </td>
       <td> Vivado fileset. By default, the files added belong to the design sources (sources_1). Valid values are [sources_1 (default), constrs_1, sim_1, utils_1]. </td>
+    </tr>
+</table>
+
+### set_constrs_settings
+**Usage**
+
+```
+set_constrs_settings <names> <used_in> <processing_order> <scoped_to_cells>
+```
+
+**Description**
+
+Set constraints settings of previously added constraint files (fileset => "constrs_1").
+
+**Parameters**
+<table>
+    <tr>
+      <th width="200"><b>Parameter</b></th>
+      <th align="center" width="80"><b>Optional</b></th>
+      <th align="right"><b>Description</b></th>
+    </tr>
+    <tr>
+      <td> names </td>
+      <td> No </td>
+      <td> List containing the constraint file names </td>
+    </tr>	
+    <tr>
+      <td> used_in </td>
+      <td> No </td>
+      <td> Defines when the constraints shall be applied </td>
+    </tr>
+    <tr>
+      <td> processing_order </td>
+      <td> Yes </td>
+      <td> Set the processing order {"EARLY", "NORMAL" (default), "LATE"} </td>
+    </tr>	
+    <tr>
+      <td> scoped_to_cells </td>
+      <td> Yes </td>
+      <td> Scopes the constraints to a specific cell only inside the IP </td>
     </tr>
 </table>
 

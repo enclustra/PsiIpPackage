@@ -30,6 +30,7 @@ variable IpTaxonomy
 variable SrcRelative
 variable LibRelative
 variable LibCopied
+variable ConstrsSettings
 variable GuiPages
 variable CurrentPage
 variable CurrentGroup
@@ -85,6 +86,7 @@ proc init {name version revision library} {
     variable SrcRelative [list]
     variable LibRelative [list]
     variable LibCopied [list]
+    variable ConstrsSettings [list]
     variable GuiPages [list]
     variable CurrentGroup "None"
     variable GuiParameters [list]
@@ -214,6 +216,29 @@ proc add_sources_relative {srcs {lib "NONE"} {type "NONE"} {fileset "sources_1"}
     }
 }
 namespace export add_sources_relative
+
+# Set settings of constraint files
+#
+# @param names              List containing the constraint file names
+# @param used_in            Defines when the constraints shall be applied. Proposed values:
+#                               {synthesis implementation}                = default, 
+#                               {synthesis implementation out_of_context} = OOC synthesis, 
+#                               {synthesis}                               = Synthesis only, 
+#                               {implementation}                          = Implementation only. 
+# @param processing_order   Set the processing order {"EARLY", "NORMAL" (default), "LATE"}.
+# @param scoped_to_cells    Scopes the constraints to a specific cell only inside the IP.
+proc set_constrs_settings {names used_in {processing_order "NORMAL"} {scoped_to_cells ""}} {
+    variable ConstrsSettings
+    foreach name $names {
+        set constrsSettings [dict create]
+        dict set constrsSettings NAME $name
+        dict set constrsSettings USED_IN $used_in
+        dict set constrsSettings PROC_ORDER $processing_order
+        dict set constrsSettings CELL_SCOPE $scoped_to_cells
+        lappend ConstrsSettings $constrsSettings
+    }
+}
+namespace export set_constrs_settings
 
 # Add sub core reference
 #
@@ -789,6 +814,19 @@ proc package {tgtDir {edit false} {synth false} {part ""}} {
                 set_property file_type $fileType [get_files $tgtPath]
             }
         }
+    }
+    
+    #Set Constraints settings
+    variable ConstrsSettings
+    foreach setting $ConstrsSettings {
+        set Name      [dict get $setting NAME]
+        set UsedIn    [dict get $setting USED_IN]
+        set ProcOrder [dict get $setting PROC_ORDER]
+        set CellScope [dict get $setting CELL_SCOPE]
+        
+        set_property used_in          $UsedIn    [get_files $Name]
+        set_property processing_order $ProcOrder [get_files $Name]
+        set_property scoped_to_cells  $CellScope [get_files $Name]
     }
 
     #Set top entity
