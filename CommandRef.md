@@ -978,9 +978,9 @@ Map ports to an existing bus interface (user-created interfaces must be imported
     <tr>
       <td> definition </td>
       <td> No </td>
-      <td> Complete VLNV identifier of a existing interface definition
-			(e.g. "xilinx.com:interface:uart:1.0") or just the name (e.g. "uart").
-			If multiple interface definitions with the same name are found,
+      <td> Complete VLNV identifier of a existing interface abstraction definition
+			(e.g. "xilinx.com:interface:uart_rtl:1.0") or just the name (e.g. "uart_rtl").
+			If multiple interface abstractions with the same name are found,
 			the user gets an error message with a list of all interfaces that were found.</td>
     </tr>	
     <tr>

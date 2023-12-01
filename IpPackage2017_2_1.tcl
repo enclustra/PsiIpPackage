@@ -958,33 +958,25 @@ proc package {tgtDir {edit false} {synth false} {part ""}} {
         set IfMode          [dict get $busIf MODE]
         set IfDescription   [dict get $busIf DESCRIPTION]
         set IfPortMaps      [dict get $busIf PORT_MAPS]
-        set LastDpPosition  [string last ":" $IfDefinition]
-        set LastRtlPosition [string last "_rtl" $IfDefinition]
-        set DefStringLength [string length $IfDefinition]
-        if {$LastDpPosition == -1} {
-            if {[expr {$DefStringLength - $LastRtlPosition - 4}] == 0} {
-                set IfDefinition [string replace $IfDefinition $LastRtlPosition [expr {$DefStringLength - 1}] ""]
+
+        # Find unique bus interface abstraction from Name or VLNV
+        if {[string last ":" $IfDefinition] == -1} {
+            set IfBusAbs     [ipx::get_ipfiles -type "busabs" "*:${IfDefinition}:*"]
+            if {[llength $IfBusAbs] == 0} {
+                set IfBusAbs [ipx::get_ipfiles -type "busabs" "*:${IfDefinition}_*:*"]
             }
-            set IfBusDef    [ipx::get_ipfiles -type busdef *:$IfDefinition:*]
-            set IfBusAbs    [ipx::get_ipfiles -type busabs *:$IfDefinition\_rtl:*]
         } else {
-            if {[expr {$LastDpPosition - $LastRtlPosition - 4}] == 0} {
-                set IfDefinition [string replace $IfDefinition $LastRtlPosition [expr {$LastDpPosition - 1}] ""]
-                set LastDpPosition  [expr {$LastDpPosition - 4}]
-            }
-            set IfBusDef    [ipx::get_ipfiles -type busdef $IfDefinition]
-            set IfBusAbs    [ipx::get_ipfiles -type busabs [string replace $IfDefinition $LastDpPosition $LastDpPosition "_rtl:"]]
+            set IfBusAbs     [ipx::get_ipfiles -type "busabs" "*${IfDefinition}*"]
         }
-        if {[llength $IfBusDef] == 0} {
-            puts "ERROR: Could not find a interface definition that contains $IfDefinition. Define a valid interface definition or use import_interface_definition if you forgot to import the definition."
-            return
-        } elseif {[llength $IfBusDef] != 1} {
-            error "ERROR: Found multiple interface definitions that contain $IfDefinition (LIST: [get_property vlnv $IfBusDef]). Select a vlnv interface definition from the list and define the name accordingly!"
-            return
+        if {[llength $IfBusAbs] == 0} {
+            error "ERROR: Could not find an interface abstraction definition that matches ${IfDefinition}. Define a valid interface abstraction or use \"import_interface_definition\" if you forgot to import an user-created definition."
+        } elseif {[llength $IfBusAbs] != 1} {
+            error "ERROR: Found multiple interface abstraction definitions that matches ${IfDefinition} (LIST: [get_property vlnv ${IfBusAbs}]). Select an abstraction definition (vlnv) from the list and define the fully qualified name accordingly!"
         }
-        set IfBusDefVlnv    [get_property vlnv [lindex $IfBusDef 0]]
-        set IfBusAbsVlnv    [get_property vlnv [lindex $IfBusAbs 0]]
-        set AbsPortList     [get_property name [ipx::get_bus_abstraction_ports -of_objects [lindex $IfBusAbs 0]]]
+
+        set IfBusDefVlnv    [get_property bus_type_vlnv $IfBusAbs]
+        set IfBusAbsVlnv    [get_property vlnv          $IfBusAbs]
+        set AbsPortList     [get_property name          [ipx::get_bus_abstraction_ports -of_objects $IfBusAbs]]
 
         ipx::add_bus_interface $IfName                      [ipx::current_core]
         set_property abstraction_type_vlnv $IfBusAbsVlnv    [ipx::get_bus_interfaces $IfName -of_objects [ipx::current_core]]
