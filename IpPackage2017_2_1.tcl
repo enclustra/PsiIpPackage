@@ -432,6 +432,7 @@ proc gui_create_parameter {vhdlName displayName} {
     dict set CurrentParameter TEXTBELOW "None"
     dict set CurrentParameter ENABLEMENTDEF "None"
     dict set CurrentParameter ENABLEMENTDEP "None"
+    dict set CurrentParameter TOOLTIP "None"
 }
 namespace export gui_create_parameter
 
@@ -463,8 +464,18 @@ proc gui_create_user_parameter {paramName type initialValue {displayName "None"}
     dict set CurrentParameter TEXTBELOW "None"
     dict set CurrentParameter ENABLEMENTDEF "None"
     dict set CurrentParameter ENABLEMENTDEP "None"
+    dict set CurrentParameter TOOLTIP "None"
 }
 namespace export gui_create_user_parameter
+
+# Set the tooltip of a parameter
+#
+# @param tooltip    Tooltip text
+proc gui_parameter_set_tooltip {tooltip} {
+    variable CurrentParameter
+    dict set CurrentParameter TOOLTIP $tooltip
+}
+namespace export gui_parameter_set_tooltip
 
 # Change the widget of the current parameter to a dropdown list
 #
@@ -476,6 +487,7 @@ proc gui_parameter_set_widget_dropdown_list {values} {
     dict set CurrentParameter VALUES $values
 }
 namespace export gui_parameter_set_widget_dropdown_list
+
 #Keep old naming for reverse compatibility (don't use for new scripts)
 proc gui_parameter_set_widget_dropdown {values} {
     gui_parameter_set_widget_dropdown_list $values
@@ -947,6 +959,11 @@ proc package {tgtDir {edit false} {synth false} {part ""}} {
         set text [dict get $param TEXTBELOW]
         if {$text != "None"} {
             ipgui::add_static_text -name "$ParamName\_TextBelow" -component [ipx::current_core] -parent [ipgui::get_pagespec -name [dict get $param PAGE] -component [ipx::current_core] ] -text $text
+        }
+        #Tooltip
+        set tooltip [dict get $param TOOLTIP]
+        if {$tooltip != "None"} {
+            set_property tooltip $tooltip [ipgui::get_guiparamspec -name $ParamName -component [ipx::current_core]]
         }
     }
 

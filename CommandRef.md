@@ -33,6 +33,7 @@ namespace import psi::ip_package::latest::*
  * [add_gui_support_tcl](#add_gui_support_tcl)
  * [gui_create_parameter](#gui_create_parameter) 
  * [gui_create_user_parameter](#gui_create_user_parameter) 
+ * [gui_parameter_set_tooltip](#gui_parameter_set_tooltip) 
  * [gui_parameter_set_widget_dropdown_list](#gui_parameter_set_widget_dropdown_list) 
  * [gui_parameter_set_widget_dropdown_pairs](#gui_parameter_set_widget_dropdown_pairs) 
  * [gui_parameter_set_widget_checkbox](#gui_parameter_set_widget_checkbox) 
@@ -752,6 +753,32 @@ By default parameters are shown as textboxes.
       <td> Yes </td>
       <td> Text to display for the parameter in the GUI </td>
     </tr>	
+</table>
+
+### gui_parameter_set_tooltip
+**Usage**
+
+```
+gui_parameter_set_tooltip <tooltip> 
+```
+
+**Description**
+
+This command must be called between [gui_create_parameter](#gui_create_parameter)/[gui_create_user_parameter](#gui_create_user_parameter) 
+and [gui_add_parameter](#gui_add_parameter) for a given parameter. It configures the tooltip to be shown in the GUI when hoovering the parameter.
+
+**Parameters**  
+<table>
+    <tr>
+      <th width="200"><b>Parameter</b></th>
+      <th align="center" width="80"><b>Optional</b></th>
+      <th align="right"><b>Description</b></th>
+    </tr>
+    <tr>
+      <td> tooltip </td>
+      <td> No </td>
+      <td> Tooltip text </td>
+    </tr>		
 </table>
 
 ### gui_parameter_set_widget_dropdown_list
