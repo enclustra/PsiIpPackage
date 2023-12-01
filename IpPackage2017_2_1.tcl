@@ -48,6 +48,9 @@ variable DriverFiles
 variable XparParameters
 variable ClockInputs
 variable ResetInputs
+variable ClockOutputs
+variable ResetOutputs
+variable InterruptOutputs
 variable IfClocks
 variable TopEntity
 variable DefaultVhdlLib
@@ -100,6 +103,9 @@ proc init {name version revision library} {
     variable TopEntity "None"
     variable ClockInputs [list]
     variable ResetInputs [list]
+    variable ClockOutputs [list]
+    variable ResetOutputs [list]
+    variable InterruptOutputs [list]
     variable DefaultVhdlLib $IpName\_$IpVersionUnderscore
     variable GuiSupportTcl [list]
     variable TtclFiles [list]
@@ -625,9 +631,14 @@ namespace export add_interface_enablement_condition
 # Add a clock input that was not detected by Vivado automatically
 #
 # @param portname   Name of the clock port to add
-proc add_clock_in_interface {portname} {
+# @param freq_hz    Constant clock frequency to assign to this clock
+proc add_clock_in_interface {portname {freq_hz "None"}} {
     variable ClockInputs
-    lappend ClockInputs $portname
+    set clocks [dict create]
+    dict set clocks PORTNAME $portname
+    dict set clocks FREQ_HZ $freq_hz
+    dict set clocks MODE "slave"
+    lappend ClockInputs $clocks
 }
 namespace export add_clock_in_interface
 
@@ -637,11 +648,55 @@ namespace export add_clock_in_interface
 # @param polarity   Polarity of the reset port ("positive" or "negative")
 proc add_reset_in_interface {portname {polarity "positive"}} {
     variable ResetInputs
+    set resets [dict create]
     dict set resets PORTNAME $portname
     dict set resets POLARITY $polarity
+    dict set resets MODE "slave"
     lappend ResetInputs $resets
 }
 namespace export add_reset_in_interface
+
+# Add a clock output that was not detected by Vivado automatically
+#
+# @param portname   Name of the clock port to add
+# @param freq_hz    Constant clock frequency to assign to this clock
+proc add_clock_out_interface {portname {freq_hz "None"}} {
+    variable ClockOutputs
+    set clocks [dict create]
+    dict set clocks PORTNAME $portname
+    dict set clocks FREQ_HZ $freq_hz
+    dict set clocks MODE "master"
+    lappend ClockOutputs $clocks
+}
+namespace export add_clock_out_interface
+
+# Add a reset output that was not detected by Vivado automatically
+#
+# @param portname   Name of the reset port to add
+# @param polarity   Polarity of the reset port ("positive" or "negative")
+proc add_reset_out_interface {portname {polarity "positive"}} {
+    variable ResetOutputs
+    set resets [dict create]
+    dict set resets PORTNAME $portname
+    dict set resets POLARITY $polarity
+    dict set resets MODE "master"
+    lappend ResetOutputs $resets
+}
+namespace export add_reset_out_interface
+
+# Add a interrupt output that was not detected by Vivado automatically
+#
+# @param portname   Name of the interrupt port to add
+# @param polarity   Sensitivity of the interrupt port ("LEVEL_HIGH", "LEVEL_LOW", "EDGE_RISING" or "EDGE_FALLING")
+proc add_interrupt_out_interface {portname {sensitivity "LEVEL_HIGH"}} {
+    variable InterruptOutputs
+    set interrupts [dict create]
+    dict set interrupts PORTNAME $portname
+    dict set interrupts SENSITIVITY $sensitivity
+    dict set interrupts MODE "master"
+    lappend InterruptOutputs $interrupts
+}
+namespace export add_interrupt_out_interface
 
 # Package the IP-Core
 #
@@ -909,24 +964,37 @@ proc package {tgtDir {edit false} {synth false} {part ""}} {
     }
 
     #Handle Interfaces not detected automatically
-    puts "*** Add Clock Input Interface ***"
+    puts "*** Add Clock Input/Output Interfaces ***"
     variable ClockInputs
-    foreach clock $ClockInputs {
-        ipx::add_bus_interface $clock [ipx::current_core]
-        set_property abstraction_type_vlnv xilinx.com:signal:clock_rtl:1.0 [ipx::get_bus_interfaces $clock -of_objects [ipx::current_core]]
-        set_property bus_type_vlnv xilinx.com:signal:clock:1.0 [ipx::get_bus_interfaces $clock -of_objects [ipx::current_core]]
-        set_property display_name $clock [ipx::get_bus_interfaces $clock -of_objects [ipx::current_core]]
-        ipx::add_bus_parameter FREQ_HZ [ipx::get_bus_interfaces $clock -of_objects [ipx::current_core]]
-        ipx::add_port_map CLK [ipx::get_bus_interfaces $clock -of_objects [ipx::current_core]]
-        set_property physical_name $clock [ipx::get_port_maps CLK -of_objects [ipx::get_bus_interfaces $clock -of_objects [ipx::current_core]]]
+    variable ClockOutputs
+    set Clocks [lappend ClockInputs {*}$ClockOutputs]
+    foreach clock $Clocks {
+        set Portname    [dict get $clock PORTNAME]
+        set Freq_Hz     [dict get $clock FREQ_HZ]
+        set Mode        [dict get $clock MODE]
+        ipx::add_bus_interface $Portname [ipx::current_core]
+        set_property interface_mode $Mode [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
+        set_property abstraction_type_vlnv xilinx.com:signal:clock_rtl:1.0 [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
+        set_property bus_type_vlnv xilinx.com:signal:clock:1.0 [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
+        set_property display_name $Portname [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
+        if {$Freq_Hz != "None"} {
+            ipx::add_bus_parameter FREQ_HZ [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
+            set_property value $Freq_Hz [ipx::get_bus_parameters FREQ_HZ -of_objects [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]]
+        }
+        ipx::add_port_map CLK [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
+        set_property physical_name $Portname [ipx::get_port_maps CLK -of_objects [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]]
     }
 
-    puts "*** Add Reset Input Interface ***"
+    puts "*** Add Reset Input/Output Interfaces ***"
     variable ResetInputs
-    foreach reset $ResetInputs {
+    variable ResetOutputs
+    set Resets [lappend ResetInputs {*}$ResetOutputs]
+    foreach reset $Resets {
         set Portname    [dict get $reset PORTNAME]
         set Polarity    [dict get $reset POLARITY]
+        set Mode        [dict get $clock MODE]
         ipx::add_bus_interface $Portname [ipx::current_core]
+        set_property interface_mode $Mode [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
         set_property abstraction_type_vlnv xilinx.com:signal:reset_rtl:1.0 [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
         set_property bus_type_vlnv xilinx.com:signal:reset:1.0 [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
         set_property display_name $Portname [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
@@ -939,7 +1007,24 @@ proc package {tgtDir {edit false} {synth false} {part ""}} {
         ipx::add_port_map RST [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
         set_property physical_name $Portname [ipx::get_port_maps RST -of_objects [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]]
     }
-
+    
+    puts "*** Add Interrupt Output Interfaces ***"
+    variable InterruptOutputs
+    foreach interrupt $InterruptOutputs {
+        set Portname    [dict get $interrupt PORTNAME]
+        set Sensitivity [dict get $interrupt SENSITIVITY]
+        set Mode        [dict get $clock MODE]
+        ipx::add_bus_interface $Portname [ipx::current_core]
+        set_property interface_mode $Mode [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
+        set_property abstraction_type_vlnv xilinx.com:signal:interrupt_rtl:1.0 [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
+        set_property bus_type_vlnv xilinx.com:signal:interrupt:1.0 [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
+        set_property display_name $Portname [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
+        ipx::add_bus_parameter SENSITIVITY [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
+        set_property value $Sensitivity [ipx::get_bus_parameters SENSITIVITY -of_objects [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]]
+        ipx::add_port_map INTERRUPT [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]
+        set_property physical_name $Portname [ipx::get_port_maps INTERRUPT -of_objects [ipx::get_bus_interfaces $Portname -of_objects [ipx::current_core]]]
+    }
+    
     #Import Interface Definitions
     puts "*** Import Interface Definitions ***"
     variable ImportInterfaceDefinitions

@@ -48,6 +48,10 @@ namespace import psi::ip_package::latest::*
  * [remove_autodetected_interface](#remove_autodetected_interface) 
  * [remove_file_from_ip](#remove_file_from_ip)
  * [add_clock_in_interface](#add_clock_in_interface)
+ * [add_reset_in_interface](#add_reset_in_interface)
+ * [add_clock_out_interface](#add_clock_out_interface)
+ * [add_reset_out_interface](#add_reset_out_interface)
+ * [add_interrupt_out_interface](#add_interrupt_out_interface)
  * [set_interface_clock](#set_interface_clock)
  * [add_drivers_relative](#add_drivers_relative)
  * [set_interface_mode](#set_interface_mode)
@@ -1129,12 +1133,12 @@ generated during IP-generation (See [add_ttcl_vhd](#add_ttcl_vhd) )
 **Usage**
 
 ```
-add_clock_in_interface <portname> 
+add_clock_in_interface <portname> <freq_hz> 
 ```
 
 **Description**
 
-Vivado does only recognize clock inputs is they have a *_clk* suffix. If a clock port is named differently, it is not recognized as clock and hence it can also not be used as clock for an interface (see [set_interface_clock](#set_interface_clock)). In this case, the *add_clock_in_interface* can be used to let Vivado know that a port is a clock input independently of its name.
+Vivado does only recognize clock inputs if they have a special suffix. If a clock port is named differently, it is not recognized as clock and hence it can also not be used as clock for an interface (see [set_interface_clock](#set_interface_clock)). In this case, the *add_clock_in_interface* can be used to let Vivado know that a port is a clock input independently of its name.
 
 **Parameters**  
 <table>
@@ -1146,7 +1150,132 @@ Vivado does only recognize clock inputs is they have a *_clk* suffix. If a clock
     <tr>
       <td> portname </td>
       <td> No </td>
-      <td> Name of the clock input purt </td>
+      <td> Name of the clock input port </td>
+    </tr>
+    <tr>
+      <td> freq_hz </td>
+      <td> Yes </td>
+      <td> Constant clock frequency to assign to this clock </td>
+    </tr>		
+</table>
+
+### add_reset_in_interface
+**Usage**
+
+```
+add_reset_in_interface <portname> <polarity>
+```
+
+**Description**
+
+Vivado does only recognize reset inputs if they have a special suffix. If a reset port is named differently, it is not recognized. In this case, the *add_reset_in_interface* can be used to let Vivado know that a port is a reset input independently of its name.
+
+**Parameters**  
+<table>
+    <tr>
+      <th width="200"><b>Parameter</b></th>
+      <th align="center" width="80"><b>Optional</b></th>
+      <th align="right"><b>Description</b></th>
+    </tr>
+    <tr>
+      <td> portname </td>
+      <td> No </td>
+      <td> Name of the reset input port </td>
+    </tr>
+    <tr>
+      <td> polarity </td>
+      <td> Yes </td>
+      <td> Polarity of the reset port ("positive" or "negative") </td>
+    </tr>		
+</table>
+
+### add_clock_out_interface
+**Usage**
+
+```
+add_clock_out_interface <portname> <freq_hz> 
+```
+
+**Description**
+
+Vivado does only recognize clock outputs if they have a special suffix. If a clock port is named differently, it is not recognized as clock. In this case, the *add_clock_out_interface* can be used to let Vivado know that a port is a clock output independently of its name.
+
+**Parameters**  
+<table>
+    <tr>
+      <th width="200"><b>Parameter</b></th>
+      <th align="center" width="80"><b>Optional</b></th>
+      <th align="right"><b>Description</b></th>
+    </tr>
+    <tr>
+      <td> portname </td>
+      <td> No </td>
+      <td> Name of the clock output port </td>
+    </tr>
+    <tr>
+      <td> freq_hz </td>
+      <td> Yes </td>
+      <td> Constant clock frequency to assign to this clock </td>
+    </tr>		
+</table>
+
+### add_reset_out_interface
+**Usage**
+
+```
+add_reset_out_interface <portname> <polarity>
+```
+
+**Description**
+
+Vivado does only recognize reset outputs if they have a special suffix. If a reset port is named differently, it is not recognized. In this case, the *add_reset_out_interface* can be used to let Vivado know that a port is a reset output independently of its name.
+
+**Parameters**  
+<table>
+    <tr>
+      <th width="200"><b>Parameter</b></th>
+      <th align="center" width="80"><b>Optional</b></th>
+      <th align="right"><b>Description</b></th>
+    </tr>
+    <tr>
+      <td> portname </td>
+      <td> No </td>
+      <td> Name of the reset output port </td>
+    </tr>
+    <tr>
+      <td> polarity </td>
+      <td> Yes </td>
+      <td> Polarity of the reset port ("positive" or "negative") </td>
+    </tr>		
+</table>
+
+### add_interrupt_out_interface
+**Usage**
+
+```
+add_interrupt_out_interface <portname> <sensitivity>
+```
+
+**Description**
+
+Vivado does only recognize interrupt outputs if they have a special suffix. If a interrupt port is named differently, it is not recognized. In this case, the *add_interrupt_out_interface* can be used to let Vivado know that a port is a interrupt output independently of its name.
+
+**Parameters**  
+<table>
+    <tr>
+      <th width="200"><b>Parameter</b></th>
+      <th align="center" width="80"><b>Optional</b></th>
+      <th align="right"><b>Description</b></th>
+    </tr>
+    <tr>
+      <td> portname </td>
+      <td> No </td>
+      <td> Name of the interrupt output port </td>
+    </tr>
+    <tr>
+      <td> sensitivity </td>
+      <td> Yes </td>
+      <td> Sensitivity of the interrupt port ("LEVEL_HIGH", "LEVEL_LOW", "EDGE_RISING" or "EDGE_FALLING") </td>
     </tr>		
 </table>
 
