@@ -189,7 +189,7 @@ namespace export set_datasheet_relative
 proc add_sources_relative {srcs {lib "NONE"} {type "NONE"}} {
     variable SrcRelative
     variable DefaultVhdlLib
-    variable srcFile [dict create]
+    set srcFile [dict create]
     foreach file $srcs {
         dict set srcFile SRC_PATH $file
         if {$lib == "NONE"} {
@@ -256,7 +256,7 @@ proc add_lib_relative {libPath files {lib "NONE"} {type "NONE"}} {
     variable LibRelative
     variable DefaultVhdlLib
     foreach file $files {
-        variable libFile [dict create]
+        set libFile [dict create]
         dict set libFile SRC_PATH [concat $libPath/$file]
         if {$lib == "NONE"} {
             dict set libFile LIBRARY $DefaultVhdlLib
@@ -285,7 +285,7 @@ proc add_lib_copied {tgtPath libPath files {lib "NONE"} {type "NONE"}} {
     variable LibCopied
     variable DefaultVhdlLib
     foreach file $files {
-        variable copied [dict create]
+        set copied [dict create]
         dict set copied TGT_PATH [concat $tgtPath/$file]
         dict set copied SRC_PATH [concat $libPath/$file]
         if {$lib == "NONE"} {
@@ -312,7 +312,7 @@ proc add_ttcl_vhd {files {lib "NONE"}} {
     variable TtclFiles
     variable DefaultVhdlLib
     foreach file $files {
-        variable ttclFile [dict create]
+        set ttclFile [dict create]
         dict set ttclFile SRC_FILE $file
         if {$lib == "NONE"} {
             dict set ttclFile LIBRARY $DefaultVhdlLib
@@ -546,8 +546,8 @@ namespace export gui_add_parameter
 proc import_interface_definition {srcPath defNames} {
     variable ImportInterfaceDefinitions
     foreach def $defNames {
-        variable BusAbs [concat $srcPath/$def\_rtl.xml]
-        variable BusDef [concat $srcPath/$def.xml]
+        set BusAbs [concat $srcPath/$def\_rtl.xml]
+        set BusDef [concat $srcPath/$def.xml]
         lappend ImportInterfaceDefinitions $BusAbs
         lappend ImportInterfaceDefinitions $BusDef
     }
@@ -567,7 +567,7 @@ namespace export import_interface_definition
 #                       (e.g. {{"Uart_Rx" "RxD"} {"Uart_Tx" "TxD"} {...}}
 proc add_bus_interface {definition name mode description port_maps} {
     variable AddBusInterfaces
-    variable CurrentBusInterface [dict create]
+    set CurrentBusInterface [dict create]
     dict set CurrentBusInterface DEFI  $definition
     dict set CurrentBusInterface NAME  $name
     dict set CurrentBusInterface MODE  $mode
@@ -583,7 +583,7 @@ namespace export add_bus_interface
 # @param condition  Enablementcondition (pass Parameter Names as TCL variables). Example "\$C_ADC_CHANNELS > 3"
 proc add_port_enablement_condition {port condition} {
     variable PortEnablementConditions
-    variable Condition [dict create]
+    set Condition [dict create]
     dict set Condition PORT $port
     dict set Condition CONDITION $condition
     lappend PortEnablementConditions $Condition
@@ -596,7 +596,7 @@ namespace export add_port_enablement_condition
 # @param mode       Interface mode (master, slave or monitor)
 proc set_interface_mode {interface mode} {
     variable PortInterfaceModes
-    variable Mode [dict create]
+    set Mode [dict create]
     dict set Mode INTERFACE $interface
     dict set Mode MODE $mode
     lappend PortInterfaceModes $Mode
@@ -609,7 +609,7 @@ namespace export set_interface_mode
 # @param condition  Enablementcondition (pass Parameter Names as TCL variables). Example "\$C_ADC_CHANNELS > 3"
 proc add_interface_enablement_condition {interface condition} {
     variable InterfaceEnablementConditions
-    variable Condition [dict create]
+    set Condition [dict create]
     dict set Condition INTERFACE $interface
     dict set Condition CONDITION $condition
     lappend InterfaceEnablementConditions $Condition
@@ -670,11 +670,11 @@ proc package {tgtDir {edit false} {synth false} {part ""}} {
     puts "*** Add source files to Project ***"
     if {[llength $SrcRelative] > 0} {
         foreach file $SrcRelative {
-            variable thisfile [dict get $file SRC_PATH]
+            set thisfile [dict get $file SRC_PATH]
             puts $thisfile
             add_files -norecurse $thisfile
             set_property library [dict get $file LIBRARY] [get_files $thisfile]
-            variable fileType [dict get $file TYPE]
+            set fileType [dict get $file TYPE]
             if {$fileType != "NONE"} {
                 set_property file_type $fileType [get_files $thisfile]
             }
@@ -683,11 +683,11 @@ proc package {tgtDir {edit false} {synth false} {part ""}} {
     puts "*** Add relative library files to Project ***"
     if {[llength $LibRelative] > 0} {
         foreach file $LibRelative {
-            variable thisfile [dict get $file SRC_PATH]
+            set thisfile [dict get $file SRC_PATH]
             puts $thisfile
             add_files -norecurse $thisfile
             set_property library [dict get $file LIBRARY] [get_files $thisfile]
-            variable fileType [dict get $file TYPE]
+            set fileType [dict get $file TYPE]
             if {$fileType != "NONE"} {
                 set_property file_type $fileType [get_files $thisfile]
             }
@@ -708,7 +708,7 @@ proc package {tgtDir {edit false} {synth false} {part ""}} {
             file copy -force $srcPath $tgtPath
             add_files -norecurse $tgtPath
             set_property library [dict get $copied LIBRARY] [get_files $tgtPath]
-            variable fileType [dict get $copied TYPE]
+            set fileType [dict get $copied TYPE]
             if {$fileType != "NONE"} {
                 set_property file_type $fileType [get_files $tgtPath]
             }
@@ -1106,8 +1106,8 @@ proc package {tgtDir {edit false} {synth false} {part ""}} {
     puts "*** TTCL VHD Files ***"
     variable TtclFiles
     foreach file $TtclFiles {
-        variable thisfile [dict get $file SRC_FILE]
-        variable thisLib [dict get $file LIBRARY]
+        set thisfile [dict get $file SRC_FILE]
+        set thisLib  [dict get $file LIBRARY]
         puts ttcl/$thisfile
         ipx::add_file ttcl/$thisfile [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]
         set_property type ttcl [ipx::get_files ttcl/$thisfile -of_objects [ipx::get_file_groups xilinx_anylanguagesynthesis -of_objects [ipx::current_core]]]
@@ -1194,5 +1194,3 @@ proc get_variable {name} {
     variable $name
     eval return $$name
 }
-
-
