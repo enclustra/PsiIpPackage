@@ -186,7 +186,8 @@ namespace export set_datasheet_relative
 # @param lib        VHDL library to copile files into (optional, default is <ip_name>_<ip_version>).
 #                   "NONE" can be used to compile the files into the default library.
 # @param type       Override file type detected by vivado automatically. For VHDL, VHDL 2008 is used by default.
-proc add_sources_relative {srcs {lib "NONE"} {type "NONE"}} {
+# @param fileset    Define the fileset for the added files. Possible values are [sources_1 (default), constrs_1, sim_1, utils_1].
+proc add_sources_relative {srcs {lib "NONE"} {type "NONE"} {fileset "sources_1"}} {
     variable SrcRelative
     variable DefaultVhdlLib
     set srcFile [dict create]
@@ -202,6 +203,7 @@ proc add_sources_relative {srcs {lib "NONE"} {type "NONE"}} {
         if {([string match "*.vhdl" $file] || [string match "*.vhd" $file]) && ($type == "NONE")} {
             dict set srcFile TYPE "VHDL 2008"
         }
+        dict set srcFile FILESET $fileset
         lappend SrcRelative $srcFile
     }
 }
@@ -252,7 +254,8 @@ namespace export add_xparameters_entry
 # @param lib        VHDL library to compile files into (optional, default is <ip_name>_<ip_version>)
 #                   "NONE" can be used to compile the files into the default library.
 # @param type       Override file type detected by vivado automatically. For VHDL, VHDL 2008 is used by default.
-proc add_lib_relative {libPath files {lib "NONE"} {type "NONE"}} {
+# @param fileset    Define the fileset for the added files. Possible values are [sources_1 (default), constrs_1, sim_1, utils_1].
+proc add_lib_relative {libPath files {lib "NONE"} {type "NONE"} {fileset "sources_1"}} {
     variable LibRelative
     variable DefaultVhdlLib
     foreach file $files {
@@ -268,6 +271,7 @@ proc add_lib_relative {libPath files {lib "NONE"} {type "NONE"}} {
         if {([string match "*.vhdl" $file] || [string match "*.vhd" $file]) && ($type == "NONE")} {
             dict set libFile TYPE "VHDL 2008"
         }
+        dict set libFile FILESET $fileset
         lappend LibRelative $libFile
     }
 }
@@ -281,7 +285,8 @@ namespace export add_lib_relative
 # @param lib        VHDL library to compile files into (optional, default is <ip_name>_<ip_version>)
 #                   "NONE" can be used to compile the files into the default library.
 # @param type       Override file type detected by vivado automatically. For VHDL, VHDL 2008 is used by default.
-proc add_lib_copied {tgtPath libPath files {lib "NONE"} {type "NONE"}} {
+# @param fileset    Define the fileset for the added files. Possible values are [sources_1 (default), constrs_1, sim_1, utils_1].
+proc add_lib_copied {tgtPath libPath files {lib "NONE"} {type "NONE"} {fileset "sources_1"}} {
     variable LibCopied
     variable DefaultVhdlLib
     foreach file $files {
@@ -298,6 +303,7 @@ proc add_lib_copied {tgtPath libPath files {lib "NONE"} {type "NONE"}} {
         if {([string match "*.vhdl" $file] || [string match "*.vhd" $file]) && ($type == "NONE")} {
             dict set copied TYPE "VHDL 2008"
         }
+        dict set copied FILESET $fileset
         lappend LibCopied $copied
     }
 }
@@ -671,8 +677,9 @@ proc package {tgtDir {edit false} {synth false} {part ""}} {
     if {[llength $SrcRelative] > 0} {
         foreach file $SrcRelative {
             set thisfile [dict get $file SRC_PATH]
-            puts $thisfile
-            add_files -norecurse $thisfile
+            set fileset  [dict get $file FILESET]
+            puts "  ${thisfile} (fileset = ${fileset})"
+            add_files -fileset $fileset -norecurse $thisfile
             set_property library [dict get $file LIBRARY] [get_files $thisfile]
             set fileType [dict get $file TYPE]
             if {$fileType != "NONE"} {
@@ -684,8 +691,9 @@ proc package {tgtDir {edit false} {synth false} {part ""}} {
     if {[llength $LibRelative] > 0} {
         foreach file $LibRelative {
             set thisfile [dict get $file SRC_PATH]
-            puts $thisfile
-            add_files -norecurse $thisfile
+            set fileset  [dict get $file FILESET]
+            puts "  ${thisfile} (fileset = ${fileset})"
+            add_files -fileset $fileset -norecurse $thisfile
             set_property library [dict get $file LIBRARY] [get_files $thisfile]
             set fileType [dict get $file TYPE]
             if {$fileType != "NONE"} {
@@ -703,10 +711,11 @@ proc package {tgtDir {edit false} {synth false} {part ""}} {
             #unpack
             set srcPath [dict get $copied SRC_PATH]
             set tgtPath [dict get $copied TGT_PATH]
-            puts "$srcPath > $tgtPath"
+            set fileset [dict get $copied FILESET]
+            puts "  ${tgtPath} copied from ${srcPath} (fileset = ${fileset})"
             #Copy
             file copy -force $srcPath $tgtPath
-            add_files -norecurse $tgtPath
+            add_files -fileset $fileset -norecurse $tgtPath
             set_property library [dict get $copied LIBRARY] [get_files $tgtPath]
             set fileType [dict get $copied TYPE]
             if {$fileType != "NONE"} {

@@ -318,7 +318,7 @@ Usually Vivado automatically detects the top entity name. If this works, the com
 **Usage**
 
 ```
-add_sources_relative <srcs> <lib> <type>
+add_sources_relative <srcs> <lib> <type> <fileset>
 ```
 
 **Description**
@@ -329,6 +329,9 @@ referenced relatively because usually IP-Cores are delivered as GIT repository a
 By default all files are compiled into a library named accoding to the IP-Core name and version but the user can optionally choose a different library using the *lib* parameter. 
 
 By default the file type is determined by Vivado automatically but the auto detected type can be overwritten manually. For VHDL, VHDL 2008 is used by default.
+
+The default fileset is "sources_1", which is used for design sources. If your IP should support packaged constraints or additional simulation sources,
+use "constrs_1" and "sim_1" for the target fileset.
 
 **Parameters**
 <table>
@@ -352,13 +355,18 @@ By default the file type is determined by Vivado automatically but the auto dete
       <td> Yes </td>
       <td> Vivado file type. By default, the file type is detected automatically. Automatic detection can also be achieved by passing "NONE". </td>
     </tr>
+    <tr>
+      <td> fileset </td>
+      <td> Yes </td>
+      <td> Vivado fileset. By default, the files added belong to the design sources (sources_1). Valid values are [sources_1 (default), constrs_1, sim_1, utils_1]. </td>
+    </tr>
 </table>
 
 ### add_lib_relative
 **Usage**
 
 ```
-add_lib_relative <libPath> <files> <lib> <type>
+add_lib_relative <libPath> <files> <lib> <type> <fileset>
 ```
 
 **Description**
@@ -370,6 +378,9 @@ copy the library files into the IP-Core, use [add_lib_copied](add_lib_copied) .
 By default all files are compiled into a library named accoding to the IP-Core name and version but the user can optionally choose a different library using the *lib* parameter.
 
 By default the file type is determined by Vivado automatically but the auto detected type can be overwritten manually. For VHDL, VHDL 2008 is used by default.
+
+The default fileset is "sources_1", which is used for design sources. If your IP should support packaged constraints or additional simulation sources,
+use "constrs_1" and "sim_1" for the target fileset.
 
 **Parameters**
 
@@ -399,13 +410,18 @@ By default the file type is determined by Vivado automatically but the auto dete
       <td> Yes </td>
       <td> Vivado file type. By default, the file type is detected automatically. Automatic detection can also be achieved by passing "NONE". </td>
     </tr>
+    <tr>
+      <td> fileset </td>
+      <td> Yes </td>
+      <td> Vivado fileset. By default, the files added belong to the design sources (sources_1). Valid values are [sources_1 (default), constrs_1, sim_1, utils_1]. </td>
+    </tr>
 </table>
 
 ### add_lib_copied
 **Usage**
 
 ```
-add_lib_copied <tgtPath> <libPath> <files> <lib> <type>
+add_lib_copied <tgtPath> <libPath> <files> <lib> <type> <fileset>
 ```
 
 **Description**
@@ -418,6 +434,9 @@ they represent.
 By default all files are compiled into a library named accoding to the IP-Core name and version but the user can optionally choose a different library using the *lib* parameter.
 
 By default the file type is determined by Vivado automatically but the auto detected type can be overwritten manually. For VHDL, VHDL 2008 is used by default.
+
+The default fileset is "sources_1", which is used for design sources. If your IP should support packaged constraints or additional simulation sources,
+use "constrs_1" and "sim_1" for the target fileset.
 
 **Parameters**
 <table>
@@ -450,6 +469,11 @@ By default the file type is determined by Vivado automatically but the auto dete
       <td> type </td>
       <td> Yes </td>
       <td> Vivado file type. By default, the file type is detected automatically. Automatic detection can also be achieved by passing "NONE". </td>
+    </tr>
+    <tr>
+      <td> fileset </td>
+      <td> Yes </td>
+      <td> Vivado fileset. By default, the files added belong to the design sources (sources_1). Valid values are [sources_1 (default), constrs_1, sim_1, utils_1]. </td>
     </tr>
 </table>
 
