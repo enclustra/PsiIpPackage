@@ -458,6 +458,7 @@ proc gui_create_parameter {vhdlName displayName} {
     dict set CurrentParameter ENABLEMENTDEF "None"
     dict set CurrentParameter ENABLEMENTDEP "None"
     dict set CurrentParameter TOOLTIP "None"
+    dict set CurrentParameter HIDDEN "None"
 }
 namespace export gui_create_parameter
 
@@ -490,6 +491,7 @@ proc gui_create_user_parameter {paramName type initialValue {displayName "None"}
     dict set CurrentParameter ENABLEMENTDEF "None"
     dict set CurrentParameter ENABLEMENTDEP "None"
     dict set CurrentParameter TOOLTIP "None"
+    dict set CurrentParameter HIDDEN "None"
 }
 namespace export gui_create_user_parameter
 
@@ -567,6 +569,14 @@ proc gui_parameter_set_enablement {expression default} {
     dict set CurrentParameter ENABLEMENTDEP $expression
 }
 namespace export gui_parameter_set_enablement
+
+# Set visibility of the user parameter in GUI to hidden
+proc gui_parameter_set_hidden {} {
+    variable CurrentParameter
+    # Anything other than "None" will make the parameter hidden
+    dict set CurrentParameter HIDDEN true
+}
+namespace export gui_parameter_set_hidden
 
 # Add text below the current parameter
 #
@@ -1002,6 +1012,11 @@ proc package {tgtDir {edit false} {synth false} {part ""}} {
         set tooltip [dict get $param TOOLTIP]
         if {$tooltip != "None"} {
             set_property tooltip $tooltip [ipgui::get_guiparamspec -name $ParamName -component [ipx::current_core]]
+        }
+        #Hidden
+        set hidden [dict get $param HIDDEN]
+        if {$hidden != "None"} {
+            ipgui::remove_param -component [ipx::current_core] [ipgui::get_guiparamspec -name $ParamName -component [ipx::current_core]]
         }
     }
 
