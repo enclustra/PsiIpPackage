@@ -741,7 +741,7 @@ namespace export add_interrupt_out_interface
 # @param edit       [Optional] pass True to leave the IP packager GUI open for checking results etc.
 # @param synth      [Optional] pass True to run a test synthesis to verify vivado can synthesize the core
 # @param part       [Optional] Xilinx part number to do the test synthesis for (artix 7 by vivado default)
-proc package {tgtDir {edit false} {synth false} {part ""}} {
+proc package_ip {tgtDir {edit false} {synth false} {part ""}} {
     #create project, use default part defined by vivado when not specified:
     if {$part == ""} {
         create_project -force package_prj ./package_prj
@@ -1321,10 +1321,6 @@ proc package {tgtDir {edit false} {synth false} {part ""}} {
     }
 
     puts "*** DONE ***"
-}
-#Wraper to prevent name clash with existing vivado command "package"
-proc package_ip {tgtDir {edit false} {synth false} {part ""}} {
-    package $tgtDir $edit $synth $part
 }
 namespace export package_ip
 
