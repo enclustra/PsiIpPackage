@@ -1,3 +1,25 @@
+## 2.5.1
+* Bugfixes
+  * Remove internal "package" procedure because of name-clash with Vivado build-in function.
+    * Since package.tcl scripts only used the external "package_ip" procedure, backwards-compartibility is guaranteed.
+
+## 2.5.0
+* Added Features
+  * Set customized taxonomy with 'set_taxonomy'
+  * Configure constraints settings (used_in, processing_order, scoped_to_cells) with 'set_constrs_settings'
+  * Add Sub-Core References to Xilinx IP with 'add_sub_core_reference'
+  * Add ToolTip to GUI parameters with 'gui_parameter_set_tooltip'
+  * Add most common single-bit interfaces (clock, reset, interrupt)
+    * See 'add_reset_in_interface'
+    * See 'add_clock_out_interface'
+    * See 'add_reset_out_interface'
+    * See 'add_interrupt_out_interface'
+* Changes
+  * Allow to set FreqHz parameter for Clock-In interface (see 'add_clock_in_interface')
+  * Add custom bus interfaces with the abstraction name. This is necessary, since some interfaces have multiple abstractions.
+    * See 'add_bus_interface'
+  * Update baremetal-driver Makefile snippet to be compartible with newer Vivado versions.
+
 ## 2.4.0
 * Added Features
   * Automatically create driver directories
