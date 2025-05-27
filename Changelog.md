@@ -1,3 +1,7 @@
+## 2.5.0
+* Added Features
+  * Added function `gui_parameter_set_hidden`
+
 ## 2.4.0
 * Added Features
   * Automatically create driver directories

@@ -4,7 +4,7 @@ be used to access them or the namespace psi::ip_package::<VivadoVersion>:: must 
 
 To use the implementation for the latest Vivado version, "latest" can be passed as Vivado version.
 
-Befoe using the commands, type the following line in Vivado to import the commands into the global workspace:
+Before using the commands, type the following line in Vivado to import the commands into the global workspace:
 ```
 namespace import psi::ip_package::latest::*
 ```
@@ -41,6 +41,7 @@ namespace import psi::ip_package::latest::*
  * [gui_parameter_set_range](#gui_parameter_set_range) 
  * [gui_parameter_set_expression](#gui_parameter_set_expression)
  * [gui_parameter_set_enablement](#gui_parameter_set_enablement)
+ * [gui_parameter_set_hidden](#gui_parameter_set_hidden)
  * [gui_parameter_text_below](#gui_parameter_text_below)
  * [gui_add_parameter](#gui_add_parameter) 
  * [import_interface_definition](#import_interface_definition) 
@@ -926,7 +927,7 @@ and [gui_add_parameter](#gui_add_parameter) for a given parameter. It configures
 **Usage**
 
 ```
-gui_parameter_set_enablement <expr> <defauult> 
+gui_parameter_set_enablement <expr> <default> 
 ```
 
 **Description**
@@ -957,6 +958,21 @@ This command allows setting the enablement behavior of a parameter. Disabled par
  gui_parameter_set_enablement {{ $BUFFER_TYPE == "BUFR" }} true
 ```
 
+### gui_parameter_set_hidden
+**Usage**
+
+```
+gui_parameter_set_hidden
+```
+
+**Description**
+
+This command sets the visibility of the current user parameter in GUI to hidden. Hidden parameters are not visible to the user in GUI. They are usually used for intermediary calculations.
+
+**Example**
+```
+ gui_parameter_set_hidden
+```
 
 ### gui_parameter_text_below
 **Usage**
