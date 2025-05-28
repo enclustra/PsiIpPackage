@@ -1,3 +1,7 @@
+## 2.6.0
+* Added Features
+  * Added function to hide a parameter in the GUI (see `gui_parameter_set_hidden`)
+
 ## 2.5.1
 * Bugfixes
   * Remove internal "package" procedure because of name-clash with Vivado build-in function.
@@ -28,7 +32,7 @@
 
 ## 2.3.0
 * Added Features
-  * GUI supports dropdown lists and pairs 
+  * GUI supports dropdown lists and pairs
   * Added function to import user interface definitions and map IP ports to a bus interface
   * Added support for multiple interfaces in functions `remove_autodetected_interface` and `set_interface_clock`
   * Cleaned up device families
@@ -46,7 +50,7 @@
 
 ## 2.1.0
 * Added Features
-  * Allow manual selection of the library to compile files into 
+  * Allow manual selection of the library to compile files into
 * Bugfixes
   * Reorder actions to allow removing and re-adding clock interfaces (useful if vivado wrongly auto-detects associations of clocks to bus-interfaces)
 
@@ -59,18 +63,16 @@
 ## 1.6.0
 * Added Features
   * Allow setting display name in gui_create_user_parameter
-* Bugfixes 
+* Bugfixes
   * Change relative paths to not include "./" as required by 2019.1
 
 ## 1.5.0
-
 * Added Features
   * Added *add\_interface\_enablement\_condition* command to enable/disable whole interfaces
 * Bugfixes
   * Fixed pint message during compilation of drivers
 
 ## 1.4.1
-
 * Added Features
   * None
 * Bugfixes
@@ -79,7 +81,6 @@
   * Part number was not used in build, fixed this
 
 ## 1.4.0
-
 * Added Features
   * Added selection of device for test synthesis
 * Bugfixes
@@ -114,4 +115,3 @@
 
 ## V1.00
 * First release
-

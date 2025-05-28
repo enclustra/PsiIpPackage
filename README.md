@@ -31,7 +31,7 @@ Currently none
 
 # Usage
 This TCL framework allows to easily package Vivado IP-Cores from tcl scripts. This has many advantages in terms of 
-less interactive (and error-prone) packaging, reproducibility and maintainabilit (scripts can easily be version controlled).
+less interactive (and error-prone) packaging, reproducibility and maintainability (scripts can easily be version controlled).
 
 ## Notes
 The framework is written with portability to newer vivado versions in mind. By default, the latest version of Vivado
